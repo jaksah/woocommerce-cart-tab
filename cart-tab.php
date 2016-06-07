@@ -102,9 +102,25 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				add_option( 'wc_ct_link_display_total',  'total' );
 
 				// Admin.
-				add_action( 'woocommerce_settings_image_options_after', array( $this, 'admin_settings' ), 20 );
-				add_action( 'woocommerce_update_options_catalog',       array( $this, 'save_admin_settings' ) );
-				add_action( 'woocommerce_update_options_products',      array( $this, 'save_admin_settings' ) );
+				add_filter( 'woocommerce_get_sections_products', array( $this, 'wc_ct_add_section' ) );
+				add_filter( 'woocommerce_get_settings_products', array( $this, 'wc_ct_all_settings' ), 10, 2 );
+			}
+			
+			// Add section to woocommerce settings
+			function wc_ct_add_section( $sections ) {
+				$sections['wc_ct'] = __( 'Cart Tab', 'woocommerce-cart-tab' );
+				return $sections;
+			}
+
+			function wc_ct_all_settings( $settings, $current_section ) {
+				/**
+				 * Check the current section is what we want
+				 **/
+				if ( $current_section == 'wc_ct' ) {
+					return $this->settings;
+				} else {
+					return $settings;
+				}
 			}
 
 			/**
